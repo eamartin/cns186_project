@@ -14,7 +14,7 @@ CONFIG = os.path.join(PIXSEG_DIR, 'config.xml')
 MODEL = os.path.join(PIXSEG_DIR, 'pixelSegModel.xml')
 SETUP = 'LD_LIBRARY_PATH=~/186_data/darwin/trunk/external/opencv/lib'
 
-INPUT_FILE = os.path.join(PIXSEG_DIR, 'in.txt')
+INPUT_SUFFIX = '.in.txt'
 OUTPUT_SUFFIX = '.out.txt'
 
 def get_pix_labels(image_file, delete=True):
@@ -29,11 +29,12 @@ def get_pix_labels(image_file, delete=True):
 
     #shutil.copy(image_file, temp_image_path)
 
-    with open(INPUT_FILE, 'w') as f:
+    input_file = os.path.join(PIXSEG_DIR, file_name + INPUT_SUFFIX)
+    with open(input_file, 'w') as f:
         f.write(file_name + '\n')
 
     command = ('%s %s -config %s -outLabels %s %s' %
-               (SETUP, EXECUTABLE, CONFIG, OUTPUT_SUFFIX, INPUT_FILE))
+               (SETUP, EXECUTABLE, CONFIG, OUTPUT_SUFFIX, input_file))
 
     with open('/dev/null') as devnull:
         subprocess.check_call(command, shell=True,
@@ -47,7 +48,7 @@ def get_pix_labels(image_file, delete=True):
                     original_size, interp='nearest')
 
     os.remove(temp_image_path)
-    os.remove(INPUT_FILE)
+    os.remove(input_file)
 
     if delete:
         os.remove(temp_image_path + OUTPUT_SUFFIX)
